@@ -1,0 +1,1128 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "UnfallAtlas DE — German Road Accident API",
+        "description": "REST API integrating official German road accident data (Unfallatlas), regional statistics (GENESIS), and region hierarchy (GV-ISys). All data is sourced from Statistisches Bundesamt / Statistische Landesämter under licence dl-de/by-2-0.",
+        "contact": {
+            "email": "student@example.com"
+        },
+        "license": {
+            "name": "dl-de/by-2-0",
+            "url": "https://www.govdata.de/dl-de/by-2-0"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8002",
+            "description": "Local development"
+        }
+    ],
+    "paths": {
+        "/api/v1/accidents": {
+            "get": {
+                "tags": [
+                    "Accidents"
+                ],
+                "summary": "List road accidents with filters",
+                "description": "Returns a paginated list of individual accident records.",
+                "operationId": "listAccidents",
+                "parameters": [
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "district_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "municipality_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "month",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 12,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "weekday",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 7,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "hour",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "maximum": 23,
+                            "minimum": 0
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "enum": [
+                                1,
+                                2,
+                                3
+                            ]
+                        }
+                    },
+                    {
+                        "name": "involves_bicycle",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_pedestrian",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_motorcycle",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_car",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_truck",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "light_condition",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "description": "0=daylight, 1=dusk/dawn, 2=night",
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1,
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "road_condition",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "description": "0=dry, 1=wet, 2=icy — available 2022+",
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1,
+                                2
+                            ]
+                        }
+                    },
+                    {
+                        "name": "crash_type",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "description": "UTYP1: 1=single-vehicle, 2=turning, 3=crossing, 4=pedestrian, 5=parking, 6=in-lane, 7=other",
+                            "type": "integer",
+                            "maximum": 7,
+                            "minimum": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 100,
+                            "maximum": 500
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated accidents",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "source": {
+                                            "type": "string"
+                                        },
+                                        "license": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/accidents": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Accident counts grouped by region and year",
+                "operationId": "aggregateAccidents",
+                "parameters": [
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "state",
+                                "district",
+                                "municipality"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "district_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_from",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "year_to",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "involves_bicycle",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_pedestrian",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "involves_motorcycle",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Aggregated accident counts per region/year"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/time-series": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Accident counts over time grouped by year, month, weekday, or hour",
+                "operationId": "timeSeries",
+                "parameters": [
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "district_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "group_by",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "year",
+                            "enum": [
+                                "year",
+                                "month",
+                                "weekday",
+                                "hour"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Time-series data"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/rates": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Accident rates per 100,000 population or registered cars",
+                "operationId": "rates",
+                "parameters": [
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "district",
+                            "enum": [
+                                "state",
+                                "district"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per",
+                        "in": "query",
+                        "description": "Denominator: population (default) or registered_cars",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "population",
+                            "enum": [
+                                "population",
+                                "registered_cars"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Accident rates per region sorted by rate descending"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/rankings": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Top/bottom districts by a chosen metric",
+                "operationId": "rankings",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "metric",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "total",
+                            "enum": [
+                                "fatal",
+                                "bicycle",
+                                "pedestrian",
+                                "total"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "desc",
+                            "enum": [
+                                "desc",
+                                "asc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ranked districts"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/year-over-year": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Year-over-year accident count changes",
+                "operationId": "yearOverYear",
+                "parameters": [
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "district_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Year-over-year changes"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/earliest-year": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Earliest year available in the accidents dataset",
+                "operationId": "earliestYear",
+                "parameters": [
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Earliest year"
+                    }
+                }
+            }
+        },
+        "/api/v1/aggregates/zero-cases": {
+            "get": {
+                "tags": [
+                    "Aggregates"
+                ],
+                "summary": "Regions with zero accidents in a given year",
+                "description": "Performs a LEFT JOIN of the region reference against accidents for the requested year and returns all regions that recorded no accidents.",
+                "operationId": "zeroCases",
+                "parameters": [
+                    {
+                        "name": "year",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "district",
+                            "enum": [
+                                "state",
+                                "district",
+                                "municipality"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Regions with zero accidents"
+                    },
+                    "422": {
+                        "description": "Validation error — year is required"
+                    }
+                }
+            }
+        },
+        "/api/v1/metadata/sources": {
+            "get": {
+                "tags": [
+                    "Metadata"
+                ],
+                "summary": "List all registered data sources with license info",
+                "operationId": "metadataSources",
+                "responses": {
+                    "200": {
+                        "description": "Data source list"
+                    }
+                }
+            }
+        },
+        "/api/v1/import-runs": {
+            "get": {
+                "tags": [
+                    "Metadata"
+                ],
+                "summary": "List import run history",
+                "operationId": "importRuns",
+                "parameters": [
+                    {
+                        "name": "source_key",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Import run list"
+                    }
+                }
+            }
+        },
+        "/api/v1/regions": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "List administrative regions",
+                "description": "Returns a paginated list of regions, optionally filtered by level, state, district or name search.",
+                "operationId": "listRegions",
+                "parameters": [
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "Filter by administrative level: state | district | municipality",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "state",
+                                "district",
+                                "municipality"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "state_ags",
+                        "in": "query",
+                        "description": "2-digit state AGS code",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "09"
+                        }
+                    },
+                    {
+                        "name": "district_ags",
+                        "in": "query",
+                        "description": "5-digit district AGS code",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "09162"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Case-insensitive name search",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "example": "München"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated list of regions",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "type": "object"
+                                        },
+                                        "source": {
+                                            "type": "string"
+                                        },
+                                        "license": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/regions/{id}": {
+            "get": {
+                "tags": [
+                    "Regions"
+                ],
+                "summary": "Get a single region with children count and indicators",
+                "operationId": "showRegion",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Region detail"
+                    },
+                    "404": {
+                        "description": "Region not found"
+                    }
+                }
+            }
+        },
+        "/api/v1/stats/summary": {
+            "get": {
+                "tags": [
+                    "Stats"
+                ],
+                "summary": "Overall dataset summary statistics",
+                "description": "Returns aggregate counts and date ranges covering the entire dataset.",
+                "operationId": "statsSummary",
+                "responses": {
+                    "200": {
+                        "description": "Summary statistics",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "total_accidents": {
+                                                    "type": "integer"
+                                                },
+                                                "years_covered": {
+                                                    "type": "integer"
+                                                },
+                                                "earliest_year": {
+                                                    "type": "integer"
+                                                },
+                                                "latest_year": {
+                                                    "type": "integer"
+                                                },
+                                                "total_regions": {
+                                                    "type": "integer"
+                                                },
+                                                "states_count": {
+                                                    "type": "integer"
+                                                },
+                                                "districts_count": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "source": {
+                                            "type": "string"
+                                        },
+                                        "license": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Region": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "ags": {
+                        "type": "string",
+                        "example": "14612"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Dresden"
+                    },
+                    "level": {
+                        "type": "string",
+                        "enum": [
+                            "state",
+                            "district",
+                            "municipality"
+                        ]
+                    },
+                    "state_name": {
+                        "type": "string",
+                        "example": "Sachsen"
+                    },
+                    "state_ags": {
+                        "type": "string",
+                        "example": "14"
+                    },
+                    "district_ags": {
+                        "type": "string",
+                        "example": "14612"
+                    },
+                    "population": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "Accident": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "year": {
+                        "type": "integer",
+                        "example": 2023
+                    },
+                    "month": {
+                        "type": "integer",
+                        "example": 6
+                    },
+                    "hour": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "weekday": {
+                        "description": "1=Mon, 7=Sun",
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "category": {
+                        "description": "1=Fatal, 2=Serious, 3=Slight",
+                        "type": "integer",
+                        "enum": [
+                            1,
+                            2,
+                            3
+                        ]
+                    },
+                    "involves_bicycle": {
+                        "type": "boolean"
+                    },
+                    "involves_pedestrian": {
+                        "type": "boolean"
+                    },
+                    "involves_car": {
+                        "type": "boolean"
+                    },
+                    "involves_motorcycle": {
+                        "type": "boolean"
+                    },
+                    "involves_truck": {
+                        "type": "boolean"
+                    },
+                    "lon": {
+                        "type": "number",
+                        "format": "float",
+                        "nullable": true
+                    },
+                    "lat": {
+                        "type": "number",
+                        "format": "float",
+                        "nullable": true
+                    },
+                    "district_ags": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "source_system": {
+                        "type": "string",
+                        "example": "unfallatlas"
+                    }
+                },
+                "type": "object"
+            },
+            "DataSource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "key": {
+                        "type": "string",
+                        "example": "unfallatlas"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "license": {
+                        "type": "string",
+                        "example": "dl-de/by-2-0"
+                    },
+                    "license_url": {
+                        "type": "string"
+                    },
+                    "publisher": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "ImportRun": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "started",
+                            "completed",
+                            "failed"
+                        ]
+                    },
+                    "records_inserted": {
+                        "type": "integer"
+                    },
+                    "records_updated": {
+                        "type": "integer"
+                    },
+                    "records_skipped": {
+                        "type": "integer"
+                    },
+                    "retrieved_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "source_snapshot": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "AggregateAccident": {
+                "properties": {
+                    "ags": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "level": {
+                        "type": "string"
+                    },
+                    "year": {
+                        "type": "integer"
+                    },
+                    "accident_count": {
+                        "type": "integer"
+                    },
+                    "fatal_count": {
+                        "type": "integer"
+                    },
+                    "serious_count": {
+                        "type": "integer"
+                    },
+                    "slight_count": {
+                        "type": "integer"
+                    },
+                    "bicycle_count": {
+                        "type": "integer"
+                    },
+                    "pedestrian_count": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "RateResult": {
+                "properties": {
+                    "ags": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "population": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "accident_count": {
+                        "type": "integer"
+                    },
+                    "rate_per_100k": {
+                        "type": "number",
+                        "format": "float",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ApiEnvelope": {
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "type": "object"
+                        }
+                    },
+                    "meta": {
+                        "properties": {
+                            "total": {
+                                "type": "integer"
+                            },
+                            "page": {
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "source": {
+                        "type": "string",
+                        "example": "Statistisches Bundesamt"
+                    },
+                    "license": {
+                        "type": "string",
+                        "example": "dl-de/by-2-0"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Accidents",
+            "description": "Individual accident records with full filters"
+        },
+        {
+            "name": "Aggregates",
+            "description": "Counts, rates, rankings, time series"
+        },
+        {
+            "name": "Metadata",
+            "description": "Data sources, licences, import history"
+        },
+        {
+            "name": "Regions",
+            "description": "State, district, and municipality lookup"
+        },
+        {
+            "name": "Stats",
+            "description": "Overall dataset summary statistics"
+        }
+    ]
+}

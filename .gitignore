@@ -1,0 +1,30 @@
+# Laravel backend
+backend/.env
+backend/vendor/
+backend/storage/app/private/
+backend/storage/logs/
+backend/storage/framework/cache/
+backend/storage/framework/sessions/
+backend/storage/framework/views/
+backend/bootstrap/cache/
+backend/storage/app/*.csv
+backend/storage/app/*.xlsx
+backend/storage/app/*.zip
+
+# Vue frontend
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# macOS
+.DS_Store
+
+# Data files (too large for git)
+*.csv
+*.xlsx
+*.zip
+
+# PPTX source files (optional — comment out to include)
+# *.pptx
