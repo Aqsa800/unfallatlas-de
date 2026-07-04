@@ -15,20 +15,6 @@
 
 ---
 
-## 📸 Screenshots
-
-> Dashboard · Accidents · Regions · Statistics · API Explorer
-
-| Dashboard | Accidents |
-|---|---|
-| ![Dashboard](docs/dashboard.png) | ![Accidents](docs/accidents.png) |
-
-| Regions | Statistics |
-|---|---|
-| ![Regions](docs/regions.png) | ![Statistics](docs/stats.png) |
-
----
-
 ## ✨ Features
 
 - 📊 **2,098,019 accident records** from 2016–2024 across all 16 German states
@@ -237,9 +223,9 @@ The dashboard answers all mandatory exam questions live from the API:
 
 ## 📄 License
 
-Source code: **MIT**  
+Source code: **Academic use only** — TU Chemnitz DBW Project  
 Data: [Datenlizenz Deutschland – Namensnennung – Version 2.0 (dl-de/by-2-0)](https://www.govdata.de/dl-de/by-2-0)
 
 ---
 
-<p align="center">Built with ❤️ at TU Chemnitz · DBW Project 2024/25</p>
+<p align="center">Built with ❤️ at TU Chemnitz · DBW Project 2026</p>
